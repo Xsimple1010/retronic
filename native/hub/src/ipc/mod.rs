@@ -1,13 +1,14 @@
-use crate::ipc::protocol::input::ProtocolInput;
 use crate::ipc::protocol::out::ProtocolOut;
 use std::io::{BufRead, BufReader, Write};
-use std::process::{ChildStdin, ChildStdout, Command, Stdio};
+use std::process::{ChildStdout, Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::{Arc, Mutex};
 use std::thread::sleep;
 use std::time::Duration;
+use crate::ipc::send_input::IpcInput;
 
 pub mod protocol;
+pub mod send_input;
 
 pub struct Ipc {
     alive_thread: Arc<AtomicBool>,
@@ -25,9 +26,7 @@ impl Ipc {
         let stdin = child.stdin.take().ok_or("stdin não disponível")?;
         let stdout = child.stdout.take().ok_or("stdout não disponível")?;
 
-        let ipc_input = IpcInput {
-            stdin: Arc::new(Mutex::new(stdin)),
-        };
+        let ipc_input = IpcInput::new(stdin);
         let alive_thread = Arc::new(AtomicBool::new(true));
 
         Self::spawn_thread(stdout, alive_thread.clone());
@@ -61,49 +60,5 @@ impl Ipc {
                 }
             }
         });
-    }
-}
-
-#[derive(Clone)]
-pub struct IpcInput {
-    stdin: Arc<Mutex<ChildStdin>>,
-}
-
-impl IpcInput {
-    pub fn send_command(&self, cmd: ProtocolInput) -> std::io::Result<()> {
-        let json = serde_json::to_string(&cmd)?;
-        let mut stdin = match self.stdin.lock() {
-            Ok(stdin) => stdin,
-            Err(_) => {
-                return Err(std::io::Error::new(
-                    std::io::ErrorKind::Other,
-                    "stdin lock failed",
-                ));
-            }
-        };
-        writeln!(stdin, "{json}")?;
-        stdin.flush()?;
-        Ok(())
-    }
-
-    pub fn load_game(
-        &self,
-        rom_path: String,
-        core_path: String,
-        base_retro_path: String,
-    ) -> std::io::Result<()> {
-        self.send_command(ProtocolInput::LoadGame {
-            rom_path,
-            core_path,
-            base_retro_path,
-        })
-    }
-
-    pub fn close_game(&self) -> std::io::Result<()> {
-        self.send_command(ProtocolInput::GameClose)
-    }
-
-    pub fn app_exit(&self) -> std::io::Result<()> {
-        self.send_command(ProtocolInput::Exit)
     }
 }

@@ -1,4 +1,4 @@
-use crate::ipc::IpcInput;
+use crate::ipc::send_input::IpcInput;
 use crate::signals::CloseGame;
 use async_trait::async_trait;
 use messages::actor::Actor;

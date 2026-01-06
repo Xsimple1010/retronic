@@ -2,16 +2,16 @@
 //! To build a solid app, avoid communicating by sharing memory.
 //! Focus on message passing instead.
 
+mod app_exit;
 mod close_game;
 mod load_game_actor;
-mod app_exit;
 
+use crate::actors::app_exit::AppExitActor;
 use crate::actors::close_game::CloseGameActor;
 use crate::actors::load_game_actor::LoadGameActor;
-use crate::ipc::IpcInput;
+use crate::ipc::send_input::IpcInput;
 use messages::prelude::Context;
 use tokio::spawn;
-use crate::actors::app_exit::AppExitActor;
 // Uncomment below to target the web.
 // use tokio_with_wasm::alias as tokio;
 

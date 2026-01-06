@@ -1,13 +1,15 @@
 use crate::ipc::protocol::out::ProtocolOut;
+use crate::ipc::send_input::IpcInput;
 use std::io::{BufRead, BufReader, Write};
 use std::process::{ChildStdout, Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use std::thread::sleep;
 use std::time::Duration;
-use crate::ipc::send_input::IpcInput;
+use crate::ipc::receive_output::receive_output;
 
 pub mod protocol;
+mod receive_output;
 pub mod send_input;
 
 pub struct Ipc {
@@ -52,7 +54,7 @@ impl Ipc {
 
                 match serde_json::from_str::<ProtocolOut>(&line) {
                     Ok(event) => {
-                        println!("{event:?}");
+                        receive_output(event);
                     }
                     Err(err) => {
                         eprintln!("JSON inválido: {err}");

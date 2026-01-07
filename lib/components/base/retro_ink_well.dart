@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:retronic/src/bindings/bindings.dart';
 import 'package:retronic/tools/game_pad_input_handle.dart';
 
 class RetroInkWell extends StatefulWidget {
@@ -7,7 +6,7 @@ class RetroInkWell extends StatefulWidget {
     super.key,
     required this.child,
     this.onHover,
-    this.onTap,
+    required this.onTap,
     this.onLongPress,
     this.onFocusChange,
     this.borderRadius,
@@ -18,7 +17,7 @@ class RetroInkWell extends StatefulWidget {
   final Widget child;
 
   final void Function(bool)? onHover;
-  final Function()? onTap;
+  final Function() onTap;
   final void Function()? onLongPress;
   final Function(bool)? onFocusChange;
   final BorderRadius? borderRadius;
@@ -30,29 +29,17 @@ class RetroInkWell extends StatefulWidget {
 }
 
 class _RetroInkWellState extends State<RetroInkWell> {
-  final buttonPressedOutput = DeviceButtonPressedSignal.rustSignalStream;
-  final focusNode = FocusNode();
+  final GamePadInputObserver inputObserver = GamePadInputObserver();
 
   @override
   void initState() {
-    buttonPressedOutput.listen((event) {
-      final state = gamePadInputHandle(focusNode, event.message.name);
-      if (state == GamePadInputsFocus.click) {
-        if (widget.onTap != null) {
-          widget.onTap!();
-        }
-      } else if (state == GamePadInputsFocus.back) {
-        if(context.mounted) {
-          Navigator.pop(context);
-        }
-      }
-    });
+    inputObserver.start(widget.onTap, context);
     super.initState();
   }
 
   @override
   void dispose() {
-    focusNode.dispose();
+    inputObserver.stop();
     super.dispose();
   }
 
@@ -60,25 +47,23 @@ class _RetroInkWellState extends State<RetroInkWell> {
   Widget build(BuildContext context) {
     return InkWell(
       autofocus: true,
-      focusNode: focusNode,
+      focusNode: inputObserver.focusNode,
       onFocusChange: (value) => {
-        if (widget.onFocusChange != null) {widget.onFocusChange!(value)}
+        if (widget.onFocusChange != null) {widget.onFocusChange!(value)},
       },
       onHover: (value) {
         if (widget.onHover != null) {
           setState(() {
-            focusNode.requestFocus();
+            inputObserver.focusNode.requestFocus();
           });
           widget.onHover!(value);
         }
       },
       onTap: () {
-        if (widget.onTap != null) {
-          setState(() {
-            focusNode.requestFocus();
-          });
-          widget.onTap!();
-        }
+        setState(() {
+          inputObserver.focusNode.requestFocus();
+        });
+        widget.onTap();
       },
       borderRadius: widget.borderRadius,
       focusColor: widget.focusColor ?? Colors.transparent,

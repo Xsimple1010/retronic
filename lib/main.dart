@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:retronic/components/base/retro_elevated_button.dart';
+import 'package:retronic/pages/openning.dart';
 import 'package:rinf/rinf.dart';
 
 import 'src/bindings/bindings.dart';
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: ThemeData(colorScheme: .fromSeed(seedColor: Colors.deepPurple)),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: OpeningPage(),
     );
   }
 }
@@ -34,7 +35,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
   bool closeBtVisibility(GameStateChange state) {
     switch (state) {
       case GameStateChange.running:
@@ -91,7 +91,9 @@ class _MyHomePageState extends State<MyHomePage> {
               builder: (context, snapshot) => Visibility(
                 visible: snapshot.data?.message.saveImgPreview != null,
                 replacement: Text("sem imagem"),
-                child: Image.file(File(snapshot.data?.message.saveImgPreview ?? "")),
+                child: Image.file(
+                  File(snapshot.data?.message.saveImgPreview ?? ""),
+                ),
               ),
             ),
 
@@ -103,7 +105,6 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-
     );
   }
 }

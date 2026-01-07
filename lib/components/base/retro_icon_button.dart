@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:retronic/src/bindings/bindings.dart';
 import 'package:retronic/tools/game_pad_input_handle.dart';
 
 class RetroIconButton extends StatefulWidget {
@@ -17,34 +16,25 @@ class RetroIconButton extends StatefulWidget {
 }
 
 class _RetroIconButtonState extends State<RetroIconButton> {
-  final buttonPressedOutput = DeviceButtonPressedSignal.rustSignalStream;
-  final focusNode = FocusNode();
+  final GamePadInputObserver inputObserver = GamePadInputObserver();
 
   @override
   void initState() {
-    buttonPressedOutput.listen((event) {
-      final state = gamePadInputHandle(focusNode, event.message.name);
-      if (state == GamePadInputsFocus.click) {
-        widget.onPressed();
-      } else if (state == GamePadInputsFocus.back) {
-        if(context.mounted) {
-          Navigator.pop(context);
-        }
-      }
-    });
+    inputObserver.start(widget.onPressed, context);
     super.initState();
   }
 
   @override
   void dispose() {
-    focusNode.dispose();
+    inputObserver.stop();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return IconButton(
-      focusNode: focusNode,
+      autofocus: true,
+      focusNode: inputObserver.focusNode,
       onPressed: () => widget.onPressed(),
       icon: widget.icon,
     );

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:retronic/src/bindings/bindings.dart';
 import 'package:retronic/tools/game_pad_input_handle.dart';
 
 class RetroElevatedButton extends StatefulWidget {
@@ -7,7 +6,7 @@ class RetroElevatedButton extends StatefulWidget {
     super.key,
     required this.child,
     this.onHove,
-    this.onPressed,
+    required this.onPressed,
     this.onLongPress,
     this.onFocusChange,
     this.style,
@@ -16,7 +15,7 @@ class RetroElevatedButton extends StatefulWidget {
   final Widget child;
 
   final void Function(bool)? onHove;
-  final Function()? onPressed;
+  final Function() onPressed;
   final void Function()? onLongPress;
   final Function(bool)? onFocusChange;
   final ButtonStyle? style;
@@ -26,54 +25,41 @@ class RetroElevatedButton extends StatefulWidget {
 }
 
 class _RetroElevatedButtonState extends State<RetroElevatedButton> {
-  final buttonPressedOutput = DeviceButtonPressedSignal.rustSignalStream;
-  final focusNode = FocusNode();
-
-  void onPressHandle() {
-    if (widget.onPressed != null) {
-      setState(() {
-        focusNode.requestFocus();
-      });
-      widget.onPressed!();
-    }
-  }
+  final GamePadInputObserver inputObserver = GamePadInputObserver();
 
   @override
   void initState() {
-    buttonPressedOutput.listen((event) {
-      final state = gamePadInputHandle(focusNode, event.message.button);
-      if (state == GamePadInputsFocus.click) {
-        if (widget.onPressed != null) {
-          widget.onPressed!();
-        }
-      } else if (state == GamePadInputsFocus.back) {
-        if(context.mounted) {
-          Navigator.pop(context);
-        }
-      }
-    });
+    inputObserver.start(widget.onPressed, context);
     super.initState();
   }
 
   @override
   void dispose() {
-    focusNode.dispose();
+    inputObserver.stop();
     super.dispose();
+  }
+
+  void onPressHandle() {
+    setState(() {
+      inputObserver.focusNode.requestFocus();
+    });
+
+    widget.onPressed();
   }
 
   @override
   Widget build(BuildContext context) {
     return ElevatedButton(
       autofocus: true,
-      focusNode: focusNode,
+      focusNode: inputObserver.focusNode,
       style: widget.style,
       onFocusChange: (value) => {
-        if (widget.onFocusChange != null) {widget.onFocusChange!(value)}
+        if (widget.onFocusChange != null) {widget.onFocusChange!(value)},
       },
       onHover: (value) {
         if (widget.onHove != null) {
           setState(() {
-            focusNode.requestFocus();
+            inputObserver.focusNode.requestFocus();
           });
           widget.onFocusChange!(value);
         }

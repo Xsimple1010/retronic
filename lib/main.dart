@@ -39,6 +39,17 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  bool closeBtVisibility(GameStateChange state) {
+    switch (state) {
+      case GameStateChange.running:
+        return true;
+      case GameStateChange.closed:
+        return false;
+      case GameStateChange.paused:
+        return true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,11 +80,25 @@ class _MyHomePageState extends State<MyHomePage> {
               child: Text("Jogar"),
             ),
 
-            ElevatedButton(
-              onPressed: () {
-                CloseGame().sendSignalToRust();
-              },
-              child: Text("fechar"),
+            StreamBuilder(
+              stream: GameStateChangeSignal.rustSignalStream,
+              builder: (context, snapshot) => Visibility(
+                visible: snapshot.data?.message.state != null
+                    ? closeBtVisibility(snapshot.data!.message.state)
+                    : false,
+                child: ElevatedButton(
+                  onPressed: () {
+                    CloseGame().sendSignalToRust();
+                  },
+                  child: Text("fechar"),
+                ),
+              ),
+            ),
+
+            StreamBuilder(
+              stream: DeviceConnectedSignal.rustSignalStream,
+              builder: (context, snapshot) =>
+                  Text("Controle name: ${snapshot.data?.message.name}"),
             ),
           ],
         ),

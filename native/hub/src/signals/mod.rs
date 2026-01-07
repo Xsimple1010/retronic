@@ -1,4 +1,4 @@
-use rinf::{DartSignal, RustSignal};
+use rinf::{DartSignal, RustSignal, SignalPiece};
 use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, DartSignal)]
@@ -17,58 +17,60 @@ pub struct AppExit;
 // GAMEPAD
 
 #[derive(Serialize, RustSignal)]
-pub struct DeviceConnected {
+pub struct DeviceConnectedSignal {
     pub id: String,
     pub name: String,
 }
 
 #[derive(Serialize, RustSignal)]
-pub struct DeviceDisconnected {
+pub struct DeviceDisconnectedSignal {
     pub id: String,
     pub name: String,
 }
 
 #[derive(Serialize, RustSignal)]
-pub struct DeviceButtonPressed {
+pub struct DeviceButtonPressedSignal {
     pub id: String,
     pub name: String,
     pub button: String,
 }
 
 #[derive(Serialize, RustSignal)]
-pub struct WindowOpened;
+pub struct WindowOpenedSignal;
 
 #[derive(Serialize, RustSignal)]
-pub struct WindowClosed;
+pub struct WindowClosedSignal;
 
 #[derive(Serialize, RustSignal)]
-pub struct GameLoadedResult {
+pub struct GameStateChangeSignal {
+    pub state: GameStateChange,
+}
+
+#[derive(Serialize, SignalPiece)]
+pub enum GameStateChange {
+    Running,
+    Closed,
+    Paused,
+}
+
+#[derive(Serialize, RustSignal)]
+pub struct SaveStateInfoSignal {
+    pub save_path: String,
+    pub save_img_preview: String,
+}
+
+#[derive(Serialize, RustSignal)]
+pub struct SaveStateErroSignal;
+
+#[derive(Serialize, RustSignal)]
+pub struct LoadStateResultSignal {
     pub success: bool,
 }
 
 #[derive(Serialize, RustSignal)]
-pub struct GameClosed;
-
-#[derive(Serialize, RustSignal)]
-pub struct GamePaused;
-
-#[derive(Serialize, RustSignal)]
-pub struct GameResumed;
-
-#[derive(Serialize, RustSignal)]
-pub struct SaveStateResult {
-    pub success: bool,
-}
-
-#[derive(Serialize, RustSignal)]
-pub struct LoadStateResult {
-    pub success: bool,
-}
-
-#[derive(Serialize, RustSignal)]
-pub struct KeyboardState {
+pub struct KeyboardStateSignal {
     pub using: bool,
 }
 
 #[derive(Serialize, RustSignal)]
-pub struct AppExited;
+pub struct AppExitedSignal;

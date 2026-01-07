@@ -1,4 +1,4 @@
-use crate::ipc::protocol::out::ProtocolOut;
+use crate::ipc::receive_output::receive_output;
 use crate::ipc::send_input::IpcInput;
 use std::io::{BufRead, BufReader, Write};
 use std::process::{ChildStdout, Command, Stdio};
@@ -6,9 +6,8 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::thread::sleep;
 use std::time::Duration;
-use crate::ipc::receive_output::receive_output;
+use tinic_ipc_protocol::out::ProtocolOut;
 
-pub mod protocol;
 mod receive_output;
 pub mod send_input;
 

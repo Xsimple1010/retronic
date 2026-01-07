@@ -1,7 +1,7 @@
-use crate::ipc::protocol::input::ProtocolInput;
 use std::io::Write;
 use std::process::ChildStdin;
 use std::sync::{Arc, Mutex};
+use tinic_ipc_protocol::input::ProtocolInput;
 
 #[derive(Clone)]
 pub struct IpcInput {

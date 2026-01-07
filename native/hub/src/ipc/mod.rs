@@ -1,6 +1,6 @@
 use crate::ipc::receive_output::receive_output;
 use crate::ipc::send_input::IpcInput;
-use std::io::{BufRead, BufReader, Write};
+use std::io::{BufRead, BufReader};
 use std::process::{ChildStdout, Command, Stdio};
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
@@ -12,7 +12,13 @@ mod receive_output;
 pub mod send_input;
 
 pub struct Ipc {
-    alive_thread: Arc<AtomicBool>,
+    _alive_thread: Arc<AtomicBool>,
+}
+
+impl Drop for Ipc {
+    fn drop(&mut self) {
+        self._alive_thread.store(false, Ordering::SeqCst);
+    }
 }
 
 impl Ipc {
@@ -32,7 +38,12 @@ impl Ipc {
 
         Self::spawn_thread(stdout, alive_thread.clone());
 
-        Ok((Self { alive_thread }, ipc_input))
+        Ok((
+            Self {
+                _alive_thread: alive_thread,
+            },
+            ipc_input,
+        ))
     }
 
     fn spawn_thread(stdout: ChildStdout, alive_thread: Arc<AtomicBool>) {

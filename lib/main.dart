@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:retronic/components/base/retro_elevated_button.dart';
 import 'package:rinf/rinf.dart';
 
 import 'src/bindings/bindings.dart';
@@ -31,13 +34,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-
-  void _incrementCounter() {
-    setState(() {
-      _counter++;
-    });
-  }
 
   bool closeBtVisibility(GameStateChange state) {
     switch (state) {
@@ -62,12 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: .center,
           children: [
             const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-
-            ElevatedButton(
+            RetroElevatedButton(
               onPressed: () {
                 LoadGame(
                   romPath: "/home/aderval/Downloads/RetroArch_cores/ff.smc",
@@ -86,12 +77,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 visible: snapshot.data?.message.state != null
                     ? closeBtVisibility(snapshot.data!.message.state)
                     : false,
-                child: ElevatedButton(
+                child: RetroElevatedButton(
                   onPressed: () {
                     CloseGame().sendSignalToRust();
                   },
                   child: Text("fechar"),
                 ),
+              ),
+            ),
+
+            StreamBuilder(
+              stream: SaveStateInfoSignal.rustSignalStream,
+              builder: (context, snapshot) => Visibility(
+                visible: snapshot.data?.message.saveImgPreview != null,
+                replacement: Text("sem imagem"),
+                child: Image.file(File(snapshot.data?.message.saveImgPreview ?? "")),
               ),
             ),
 
@@ -103,11 +103,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ),
+
     );
   }
 }

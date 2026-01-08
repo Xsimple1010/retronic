@@ -6,10 +6,12 @@ class RetroIconButton extends StatefulWidget {
     super.key,
     required this.onPressed,
     required this.icon,
+    this.style,
   });
 
   final Function() onPressed;
   final Widget icon;
+  final ButtonStyle? style;
 
   @override
   State<RetroIconButton> createState() => _RetroIconButtonState();
@@ -34,6 +36,7 @@ class _RetroIconButtonState extends State<RetroIconButton> {
   Widget build(BuildContext context) {
     return IconButton(
       autofocus: true,
+      style: widget.style,
       focusNode: inputObserver.focusNode,
       onPressed: () => widget.onPressed(),
       icon: widget.icon,

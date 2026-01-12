@@ -709,7 +709,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "39cab71617ae0d63f51a36d69f866391735b51691dbda63cf6f96d042b63efeb"
 dependencies = [
  "libc",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -912,7 +912,7 @@ dependencies = [
 [[package]]
 name = "generics"
 version = "0.1.0"
-source = "git+https://github.com/Xsimple1010/Tinic.git#64375b5785e531436ffe096ef256d42bd83b1ae4"
+source = "git+https://github.com/Xsimple1010/Tinic.git#a95cfa703be0213d1f999060b0bfe51208e12d47"
 dependencies = [
  "libretro_sys",
 ]
@@ -1317,7 +1317,7 @@ dependencies = [
 [[package]]
 name = "libretro_sys"
 version = "0.1.0"
-source = "git+https://github.com/Xsimple1010/Tinic.git#64375b5785e531436ffe096ef256d42bd83b1ae4"
+source = "git+https://github.com/Xsimple1010/Tinic.git#a95cfa703be0213d1f999060b0bfe51208e12d47"
 dependencies = [
  "bindgen",
  "cc",
@@ -2367,7 +2367,7 @@ checksum = "7a2d987857b319362043e95f5353c0535c1f58eec5336fdfcf626430af7def58"
 [[package]]
 name = "retro_audio"
 version = "0.1.0"
-source = "git+https://github.com/Xsimple1010/Tinic.git#64375b5785e531436ffe096ef256d42bd83b1ae4"
+source = "git+https://github.com/Xsimple1010/Tinic.git#a95cfa703be0213d1f999060b0bfe51208e12d47"
 dependencies = [
  "cpal",
  "generics",
@@ -2380,7 +2380,7 @@ dependencies = [
 [[package]]
 name = "retro_controllers"
 version = "0.1.0"
-source = "git+https://github.com/Xsimple1010/Tinic.git#64375b5785e531436ffe096ef256d42bd83b1ae4"
+source = "git+https://github.com/Xsimple1010/Tinic.git#a95cfa703be0213d1f999060b0bfe51208e12d47"
 dependencies = [
  "generics",
  "gilrs",
@@ -2393,7 +2393,7 @@ dependencies = [
 [[package]]
 name = "retro_core"
 version = "0.1.0"
-source = "git+https://github.com/Xsimple1010/Tinic.git#64375b5785e531436ffe096ef256d42bd83b1ae4"
+source = "git+https://github.com/Xsimple1010/Tinic.git#a95cfa703be0213d1f999060b0bfe51208e12d47"
 dependencies = [
  "generics",
  "libretro_sys",
@@ -2404,7 +2404,7 @@ dependencies = [
 [[package]]
 name = "retro_video"
 version = "0.1.1"
-source = "git+https://github.com/Xsimple1010/Tinic.git#64375b5785e531436ffe096ef256d42bd83b1ae4"
+source = "git+https://github.com/Xsimple1010/Tinic.git#a95cfa703be0213d1f999060b0bfe51208e12d47"
 dependencies = [
  "cfg_aliases",
  "generics",
@@ -2518,7 +2518,7 @@ dependencies = [
  "errno",
  "libc",
  "linux-raw-sys 0.11.0",
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]
@@ -2777,7 +2777,7 @@ dependencies = [
 [[package]]
 name = "tinic"
 version = "0.1.7"
-source = "git+https://github.com/Xsimple1010/Tinic.git#64375b5785e531436ffe096ef256d42bd83b1ae4"
+source = "git+https://github.com/Xsimple1010/Tinic.git#a95cfa703be0213d1f999060b0bfe51208e12d47"
 dependencies = [
  "generics",
  "libretro_sys",
@@ -2792,7 +2792,7 @@ dependencies = [
 [[package]]
 name = "tinic_ipc_protocol"
 version = "0.1.4"
-source = "git+https://github.com/Xsimple1010/Tinic.git#64375b5785e531436ffe096ef256d42bd83b1ae4"
+source = "git+https://github.com/Xsimple1010/Tinic.git#a95cfa703be0213d1f999060b0bfe51208e12d47"
 dependencies = [
  "serde",
  "tinic",
@@ -3199,7 +3199,7 @@ version = "0.1.11"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c2a7b1c03c876122aa43f3020e6c3c3ee5c05081c9a00739faf7503aeba10d22"
 dependencies = [
- "windows-sys 0.60.2",
+ "windows-sys 0.61.2",
 ]
 
 [[package]]

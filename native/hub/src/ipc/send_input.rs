@@ -3,21 +3,23 @@ use std::process::ChildStdin;
 use std::sync::{Arc, Mutex};
 use tinic_ipc_protocol::input::ProtocolInput;
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
 pub struct IpcInput {
-    stdin: Arc<Mutex<ChildStdin>>,
+    stdin: Arc<Mutex<Option<ChildStdin>>>,
 }
 
 impl IpcInput {
-    pub fn new(stdin: ChildStdin) -> Self {
-        Self {
-            stdin: Arc::new(Mutex::new(stdin)),
-        }
+    pub fn set_stdin(&self, stdin: ChildStdin) {
+        match self.stdin.lock() {
+            Ok(mut lock) => *lock = Some(stdin),
+            Err(_) => {}
+        };
     }
 
     pub fn send_command(&self, cmd: ProtocolInput) -> std::io::Result<()> {
         let json = serde_json::to_string(&cmd)?;
-        let mut stdin = match self.stdin.lock() {
+
+        let stdin = match self.stdin.lock() {
             Ok(stdin) => stdin,
             Err(_) => {
                 return Err(std::io::Error::new(
@@ -26,6 +28,12 @@ impl IpcInput {
                 ));
             }
         };
+
+        let mut stdin = stdin.as_ref().ok_or(std::io::Error::new(
+            std::io::ErrorKind::Other,
+            "stdin not found",
+        ))?;
+
         writeln!(stdin, "{json}")?;
         stdin.flush()?;
         Ok(())

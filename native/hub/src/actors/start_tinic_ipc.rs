@@ -1,5 +1,5 @@
 use crate::ipc::Ipc;
-use crate::signals::LoadGame;
+use crate::signals::StartTinicIpc;
 use async_trait::async_trait;
 use messages::actor::Actor;
 use messages::address::Address;
@@ -9,23 +9,23 @@ use rinf::DartSignal;
 use std::sync::Arc;
 use tokio::task::JoinSet;
 
-pub struct LoadGameActor {
+pub struct StartTinicIpcActor {
     _owned_tasks: JoinSet<()>,
     ipc: Arc<Ipc>,
 }
 
-impl Actor for LoadGameActor {}
+impl Actor for StartTinicIpcActor {}
 
-impl LoadGameActor {
+impl StartTinicIpcActor {
     pub fn new(self_addr: Address<Self>, ipc: Arc<Ipc>) -> Self {
         let mut _owned_tasks = JoinSet::new();
         _owned_tasks.spawn(Self::listen_to_dart(self_addr));
 
-        LoadGameActor { _owned_tasks, ipc }
+        StartTinicIpcActor { _owned_tasks, ipc }
     }
 
     async fn listen_to_dart(mut self_addr: Address<Self>) {
-        let receiver = LoadGame::get_dart_signal_receiver();
+        let receiver = StartTinicIpc::get_dart_signal_receiver();
         while let Some(signal_pack) = receiver.recv().await {
             let _ = self_addr.notify(signal_pack.message).await;
         }
@@ -33,11 +33,9 @@ impl LoadGameActor {
 }
 
 #[async_trait]
-impl Notifiable<LoadGame> for LoadGameActor {
-    async fn notify(&mut self, input: LoadGame, _: &Context<Self>) {
-        let _ = self
-            .ipc
-            .input
-            .load_game(input.rom_path, input.core_path, input.base_retro_path);
+impl Notifiable<StartTinicIpc> for StartTinicIpcActor {
+    async fn notify(&mut self, input: StartTinicIpc, _: &Context<Self>) {
+        // o que fazer quando notificado!
+        self.ipc.start(input.path).unwrap();
     }
 }

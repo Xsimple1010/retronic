@@ -74,3 +74,8 @@ pub struct KeyboardStateSignal {
 
 #[derive(Serialize, RustSignal)]
 pub struct AppExitedSignal;
+
+#[derive(Deserialize, DartSignal)]
+pub struct StartTinicIpc {
+    pub path: String,
+}

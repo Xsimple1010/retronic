@@ -13,6 +13,7 @@ pub mod send_input;
 
 pub struct Ipc {
     _alive_thread: Arc<AtomicBool>,
+    pub input: IpcInput,
 }
 
 impl Drop for Ipc {
@@ -22,7 +23,14 @@ impl Drop for Ipc {
 }
 
 impl Ipc {
-    pub fn new(path: String) -> Result<(Ipc, IpcInput), String> {
+    pub fn new() -> Self {
+        Self {
+            _alive_thread: Arc::new(AtomicBool::new(false)),
+            input: IpcInput::default(),
+        }
+    }
+
+    pub fn start(&self, path: String) -> Result<(), String> {
         let mut child = Command::new(path)
             .stdin(Stdio::piped())
             .stdout(Stdio::piped())
@@ -33,20 +41,16 @@ impl Ipc {
         let stdin = child.stdin.take().ok_or("stdin não disponível")?;
         let stdout = child.stdout.take().ok_or("stdout não disponível")?;
 
-        let ipc_input = IpcInput::new(stdin);
-        let alive_thread = Arc::new(AtomicBool::new(true));
+        self.input.set_stdin(stdin);
+        self.spawn_thread(stdout);
 
-        Self::spawn_thread(stdout, alive_thread.clone());
-
-        Ok((
-            Self {
-                _alive_thread: alive_thread,
-            },
-            ipc_input,
-        ))
+        Ok(())
     }
 
-    fn spawn_thread(stdout: ChildStdout, alive_thread: Arc<AtomicBool>) {
+    fn spawn_thread(&self, stdout: ChildStdout) {
+        self._alive_thread.store(true, Ordering::SeqCst);
+        let alive_thread = self._alive_thread.clone();
+
         std::thread::spawn(move || {
             let mut reader = BufReader::new(stdout);
 

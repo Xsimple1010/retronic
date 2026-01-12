@@ -1,4 +1,4 @@
-use crate::ipc::send_input::IpcInput;
+use crate::ipc::Ipc;
 use crate::signals::CloseGame;
 use async_trait::async_trait;
 use messages::actor::Actor;
@@ -6,24 +6,22 @@ use messages::address::Address;
 use messages::context::Context;
 use messages::prelude::Notifiable;
 use rinf::DartSignal;
+use std::sync::Arc;
 use tokio::task::JoinSet;
 
 pub struct CloseGameActor {
     _owned_tasks: JoinSet<()>,
-    ipc_input: IpcInput,
+    ipc: Arc<Ipc>,
 }
 
 impl Actor for CloseGameActor {}
 
 impl CloseGameActor {
-    pub fn new(self_addr: Address<Self>, ipc_input: IpcInput) -> Self {
+    pub fn new(self_addr: Address<Self>, ipc: Arc<Ipc>) -> Self {
         let mut _owned_tasks = JoinSet::new();
         _owned_tasks.spawn(Self::listen_to_dart(self_addr));
 
-        CloseGameActor {
-            _owned_tasks,
-            ipc_input,
-        }
+        CloseGameActor { _owned_tasks, ipc }
     }
 
     async fn listen_to_dart(mut self_addr: Address<Self>) {
@@ -38,6 +36,6 @@ impl CloseGameActor {
 impl Notifiable<CloseGame> for CloseGameActor {
     async fn notify(&mut self, _: CloseGame, _: &Context<Self>) {
         // o que fazer quando notificado!
-        let _ = self.ipc_input.close_game();
+        let _ = self.ipc.input.close_game();
     }
 }

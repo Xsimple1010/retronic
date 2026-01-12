@@ -37,6 +37,8 @@ dependencies:
   meta: ^1.17.0
   tuple: ^2.0.2
   rinf: ^8.8.1
+  path_provider: ^2.1.5
+  dio: ^5.9.0
 
 dev_dependencies:
   flutter_test:

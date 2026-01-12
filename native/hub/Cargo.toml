@@ -24,6 +24,7 @@ async-trait = "0.1.87"
 messages = "0.3.1"
 serde_json = "1.0.148"
 tinic_ipc_protocol = { git = "https://github.com/Xsimple1010/Tinic.git", version = "0.1.4" }
+#tinic_super = { git = "https://github.com/Xsimple1010/Tinic.git", version = "0.1.1" }
 
 
 # Uncomment below to target the web.

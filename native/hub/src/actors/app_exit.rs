@@ -1,4 +1,4 @@
-use crate::ipc::send_input::IpcInput;
+use crate::ipc::Ipc;
 use crate::signals::AppExit;
 use async_trait::async_trait;
 use messages::actor::Actor;
@@ -6,24 +6,22 @@ use messages::address::Address;
 use messages::context::Context;
 use messages::prelude::Notifiable;
 use rinf::DartSignal;
+use std::sync::Arc;
 use tokio::task::JoinSet;
 
 pub struct AppExitActor {
     _owned_tasks: JoinSet<()>,
-    ipc_input: IpcInput,
+    ipc: Arc<Ipc>,
 }
 
 impl Actor for AppExitActor {}
 
 impl AppExitActor {
-    pub fn new(self_addr: Address<Self>, ipc_input: IpcInput) -> Self {
+    pub fn new(self_addr: Address<Self>, ipc: Arc<Ipc>) -> Self {
         let mut _owned_tasks = JoinSet::new();
         _owned_tasks.spawn(Self::listen_to_dart(self_addr));
 
-        AppExitActor {
-            _owned_tasks,
-            ipc_input,
-        }
+        AppExitActor { _owned_tasks, ipc }
     }
 
     async fn listen_to_dart(mut self_addr: Address<Self>) {
@@ -38,6 +36,6 @@ impl AppExitActor {
 impl Notifiable<AppExit> for AppExitActor {
     async fn notify(&mut self, _: AppExit, _: &Context<Self>) {
         // o que fazer quando notificado!
-        let _ = self.ipc_input.app_exit();
+        let _ = self.ipc.input.app_exit();
     }
 }

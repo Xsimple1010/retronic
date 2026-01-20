@@ -1,57 +1,38 @@
-//! This module contains actors.
-//! To build a solid app, avoid communicating by sharing memory.
-//! Focus on message passing instead.
+mod app;
+mod game;
+mod info;
+mod macros;
+mod traits;
 
-mod app_exit;
-mod close_game;
-mod load_game_actor;
-mod start_tinic_ipc;
-
-use crate::actors::app_exit::AppExitActor;
-use crate::actors::close_game::CloseGameActor;
-use crate::actors::load_game_actor::LoadGameActor;
-use crate::actors::start_tinic_ipc::StartTinicIpcActor;
-use crate::ipc::Ipc;
-use messages::prelude::Context;
+use crate::{
+    actors::{
+        app::{exit_actor::AppExitActor, start_actor::AppStartActor},
+        game::{close_game_actor::CloseGameActor, load_game_actor::LoadGameActor},
+        info::{download_infos_actor::DownloadInfoActor, get_campt_info_actor::GetCompatInfoActor},
+        traits::RetronicDartActor,
+    },
+    app_state::AppState,
+};
 use std::sync::Arc;
-use tokio::spawn;
-// Uncomment below to target the web.
-// use tokio_with_wasm::alias as tokio;
 
-/// Creates and spawns the actors in the async system.
-pub async fn create_actors() {
-    // Though simple async tasks work, using the actor model
-    // is highly recommended for state management
-    // to achieve modularity and scalability in your app.
-    // Actors keep ownership of their state and run in their own loops,
-    // handling messages from other actors or external sources,
-    // such as websockets or timers.
+pub async fn create_actors(app_state: Arc<AppState>) {
+    // // APP
+    AppStartActor::run_actor(app_state.clone());
+    AppExitActor::run_actor(app_state.clone());
 
-    let ipc = Arc::new(Ipc::new());
+    // // GAME
+    LoadGameActor::run_actor(app_state.clone());
+    CloseGameActor::run_actor(app_state.clone());
 
-    // Create actor contexts.
-    let context = Context::new();
-    let addr = context.address();
-    // let second_context = Context::new();
+    // CORE
+    // start_actor::<HasCoreInstalledActor>(app_state.clone());
+    // start_actor::<DownloadCoreActor>(app_state.clone());
+    // start_actor::<InstallCoreActor>(app_state.clone());
 
-    // Spawn the actors.
-    let load_game_actor = LoadGameActor::new(addr, ipc.clone());
-    spawn(context.run(load_game_actor));
+    // INFO
+    GetCompatInfoActor::run_actor(app_state.clone());
+    DownloadInfoActor::run_actor(app_state.clone());
 
-    let close_game_context = Context::new();
-    let addr = close_game_context.address();
-    let close_game_actor = CloseGameActor::new(addr, ipc.clone());
-    spawn(close_game_context.run(close_game_actor));
-
-    let app_exit_context = Context::new();
-    let addr = app_exit_context.address();
-    let app_exit_actor = AppExitActor::new(addr, ipc.clone());
-    spawn(app_exit_context.run(app_exit_actor));
-
-    let start_tinic_ipc_context = Context::new();
-    let addr = start_tinic_ipc_context.address();
-    let start_tinic_ipc_actor = StartTinicIpcActor::new(addr, ipc.clone());
-    spawn(start_tinic_ipc_context.run(start_tinic_ipc_actor));
-
-    // let second_actor = SecondActor::new(first_addr);
+    // // DATABASE
+    // start_actor::<UpdateDatabaseActor>(app_state.clone());
 }

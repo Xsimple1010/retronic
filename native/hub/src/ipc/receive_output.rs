@@ -1,36 +1,43 @@
-use crate::signals::{
-    AppExitedSignal, DeviceButtonPressedSignal, DeviceConnectedSignal, DeviceDisconnectedSignal,
-    GameStateChange, GameStateChangeSignal, KeyboardStateSignal, LoadStateResultSignal,
-    SaveStateErroSignal, SaveStateInfoSignal, WindowClosedSignal, WindowOpenedSignal,
-};
 use rinf::RustSignal;
 use tinic_ipc_protocol::out::{GameState, ProtocolOut, SaveStateInfo, WindowState};
+
+use crate::signals::rust_to_dart::{
+    app::OnAppExitOutSignal,
+    device::{
+        OnDeviceButtonPressedOutSignal, OnDeviceConnectedOutSignal, OnDeviceDisconnectedOutSignal,
+    },
+    game::{
+        GameStateChange, OnGameStateChangeOutSignal, OnLoadStateResultOutSignal,
+        OnSaveStateErrorOutSignal, OnSaveStateInfoOutSignal,
+    },
+    window::{OnKeyboardStateOutSignal, OnWindowClosedOutSignal, OnWindowOpenedOutSignal},
+};
 
 pub fn receive_output(protocol_out: ProtocolOut) {
     match protocol_out {
         ProtocolOut::DeviceConnected { id, name } => {
-            DeviceConnectedSignal { id, name }.send_signal_to_dart()
+            OnDeviceConnectedOutSignal { id, name }.send_signal_to_dart()
         }
         ProtocolOut::DeviceDisconnected { id, name } => {
-            DeviceDisconnectedSignal { id, name }.send_signal_to_dart()
+            OnDeviceDisconnectedOutSignal { id, name }.send_signal_to_dart()
         }
         ProtocolOut::DeviceButtonPressed { id, name, button } => {
-            DeviceButtonPressedSignal { id, name, button }.send_signal_to_dart()
+            OnDeviceButtonPressedOutSignal { id, name, button }.send_signal_to_dart()
         }
         ProtocolOut::WindowStateChange { state } => match state {
-            WindowState::Opened => WindowOpenedSignal.send_signal_to_dart(),
-            WindowState::Closed => WindowClosedSignal.send_signal_to_dart(),
+            WindowState::Opened => OnWindowOpenedOutSignal.send_signal_to_dart(),
+            WindowState::Closed => OnWindowClosedOutSignal.send_signal_to_dart(),
         },
         ProtocolOut::GameStateChange { state } => match state {
-            GameState::Closed => GameStateChangeSignal {
+            GameState::Closed => OnGameStateChangeOutSignal {
                 state: GameStateChange::Closed,
             }
             .send_signal_to_dart(),
-            GameState::Paused => GameStateChangeSignal {
+            GameState::Paused => OnGameStateChangeOutSignal {
                 state: GameStateChange::Paused,
             }
             .send_signal_to_dart(),
-            GameState::Running => GameStateChangeSignal {
+            GameState::Running => OnGameStateChangeOutSignal {
                 state: GameStateChange::Running,
             }
             .send_signal_to_dart(),
@@ -39,19 +46,21 @@ pub fn receive_output(protocol_out: ProtocolOut) {
             SaveStateInfo::Susses {
                 save_path,
                 save_img_preview,
-            } => SaveStateInfoSignal {
+            } => OnSaveStateInfoOutSignal {
                 save_path,
                 save_img_preview,
             }
             .send_signal_to_dart(),
-            SaveStateInfo::Failed => SaveStateErroSignal.send_signal_to_dart(),
+            SaveStateInfo::Failed => OnSaveStateErrorOutSignal.send_signal_to_dart(),
         },
         ProtocolOut::LoadStateResult { success } => {
-            LoadStateResultSignal { success }.send_signal_to_dart()
+            OnLoadStateResultOutSignal { success }.send_signal_to_dart()
         }
-        ProtocolOut::KeyboardState { using } => KeyboardStateSignal { using }.send_signal_to_dart(),
+        ProtocolOut::KeyboardState { using } => {
+            OnKeyboardStateOutSignal { using }.send_signal_to_dart()
+        }
         ProtocolOut::AppExited => {
-            AppExitedSignal.send_signal_to_dart();
+            OnAppExitOutSignal.send_signal_to_dart();
         }
     }
 }

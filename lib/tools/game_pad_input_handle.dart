@@ -28,30 +28,39 @@ GamePadInputsFocus gamePadInputHandle(FocusNode focusNode, String name) {
 }
 
 class GamePadInputObserver {
-  FocusNode focusNode = FocusNode();
-  Stream<RustSignalPack<DeviceButtonPressedSignal>> buttonPressedOutput =
-      DeviceButtonPressedSignal.rustSignalStream;
+  Stream<RustSignalPack<OnDeviceButtonPressedOutSignal>> buttonPressedOutput =
+      OnDeviceButtonPressedOutSignal.rustSignalStream;
+
   late final StreamSubscription _buttonSub;
 
-  void start(Function() onPressed, BuildContext context) {
-    _actionHandle(focusNode, onPressed, context);
+  void start() {
+    _actionHandle();
   }
 
-  void stop() {
+  void dispose() {
     _buttonSub.cancel();
   }
 
-  void _actionHandle(
-    FocusNode focusNode,
-    Function() onPressed,
-    BuildContext context,
-  ) {
+  void _actionHandle() {
     _buttonSub = buttonPressedOutput.listen((event) {
+      final focusNode = FocusManager.instance.primaryFocus;
+
+      if (focusNode == null) {
+        return;
+      }
+
+      final context = focusNode.context!;
+
+      if (!context.mounted) {
+        return;
+      }
+
       final state = gamePadInputHandle(focusNode, event.message.button);
+
       if (state == GamePadInputsFocus.click) {
-        onPressed();
+        Actions.invoke(context, const ActivateIntent());
       } else if (state == GamePadInputsFocus.back) {
-        if (context.mounted && Navigator.canPop(context)) {
+        if (Navigator.canPop(context)) {
           Navigator.pop(context);
         }
       }

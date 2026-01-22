@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:retronic/tools/game_pad_input_handle.dart';
 
 class RetroInkWell extends StatefulWidget {
   const RetroInkWell({
@@ -29,40 +28,19 @@ class RetroInkWell extends StatefulWidget {
 }
 
 class _RetroInkWellState extends State<RetroInkWell> {
-  final GamePadInputObserver inputObserver = GamePadInputObserver();
-
-  @override
-  void initState() {
-    inputObserver.start(widget.onTap, context);
-    super.initState();
-  }
-
-  @override
-  void dispose() {
-    inputObserver.stop();
-    super.dispose();
-  }
-
   @override
   Widget build(BuildContext context) {
     return InkWell(
       autofocus: true,
-      focusNode: inputObserver.focusNode,
       onFocusChange: (value) => {
         if (widget.onFocusChange != null) {widget.onFocusChange!(value)},
       },
       onHover: (value) {
         if (widget.onHover != null) {
-          setState(() {
-            inputObserver.focusNode.requestFocus();
-          });
           widget.onHover!(value);
         }
       },
       onTap: () {
-        setState(() {
-          inputObserver.focusNode.requestFocus();
-        });
         widget.onTap();
       },
       borderRadius: widget.borderRadius,

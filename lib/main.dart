@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:retronic/pages/download_tinic_ipc.dart';
 import 'package:retronic/pages/home.dart';
+import 'package:retronic/tools/game_pad_input_handle.dart';
 import 'package:retronic/tools/get_binary_dir.dart';
 import 'package:rinf/rinf.dart';
 
@@ -12,17 +13,38 @@ Future<void> main() async {
   await initializeRust(assignRustSignal);
 
   if (hasTinic) {
-    final path = await getTinicBinary();
-    StartTinicIpc(path: path).sendSignalToRust();
+    AppStartSignal(
+      tinicIpcFile: await getTinicBinary(),
+      baseRetroPath: (await getRetronicDir()).path,
+    ).sendSignalToRust();
   }
 
   runApp(MyApp(hasTinic: hasTinic));
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key, required this.hasTinic});
 
   final bool hasTinic;
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final gamePadInputObserver = GamePadInputObserver();
+
+  @override
+  void initState() {
+    gamePadInputObserver.start();
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    gamePadInputObserver.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,7 +52,7 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData.dark(useMaterial3: true),
       home: Visibility(
-        visible: hasTinic,
+        visible: widget.hasTinic,
         replacement: DownloadTinicIpc(),
         child: HomePage(),
       ),

@@ -22,7 +22,7 @@ pub fn game_info_to_db(game: GameInfo) -> GameInfoInDb {
         // campos que não existem no domínio
         core_path: None,
         rom_path: None,
-        console_name: None,
+        rdb_name: None,
 
         rumble: game.rumble,
     }

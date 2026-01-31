@@ -17,7 +17,7 @@ use crate::{
 
 pub struct GetCompatInfoActor {
     app_state: Arc<AppState>,
-    owned_tasks: JoinSet<()>,
+    _owned_tasks: JoinSet<()>,
 }
 
 impl_dart_actor!(actor = GetCompatInfoActor, signal = GetCompatInfosSignal);

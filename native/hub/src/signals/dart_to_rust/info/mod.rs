@@ -7,6 +7,6 @@ pub struct GetCompatInfosSignal {
 }
 
 #[derive(Deserialize, DartSignal)]
-pub struct DownloadInfoSignal {
+pub struct UpdateInfoSignal {
     pub force: bool,
 }

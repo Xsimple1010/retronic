@@ -7,10 +7,10 @@ macro_rules! impl_dart_actor {
         impl $crate::actors::traits::RetronicDartActor<$signal> for $actor {
             fn build(
                 app_state: std::sync::Arc<AppState>,
-                owned_tasks: tokio::task::JoinSet<()>,
+                _owned_tasks: tokio::task::JoinSet<()>,
             ) -> Self {
                 Self {
-                    owned_tasks,
+                    _owned_tasks,
                     app_state,
                 }
             }

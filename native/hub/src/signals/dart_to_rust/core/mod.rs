@@ -5,8 +5,3 @@ use serde::Deserialize;
 pub struct InstallCoresSignal {
     pub cores: Vec<String>,
 }
-
-#[derive(Deserialize, DartSignal)]
-pub struct DownloadCoresSignal {
-    pub force_update: bool,
-}

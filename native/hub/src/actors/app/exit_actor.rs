@@ -8,7 +8,7 @@ use std::sync::Arc;
 use tokio::task::JoinSet;
 
 pub struct AppExitActor {
-    owned_tasks: JoinSet<()>,
+    _owned_tasks: JoinSet<()>,
     app_state: Arc<AppState>,
 }
 impl_dart_actor!(actor = AppExitActor, signal = AppExitSignal);

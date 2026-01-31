@@ -12,7 +12,12 @@ pub struct OnExtractFileOutSignal {
 }
 
 #[derive(Serialize, RustSignal)]
-pub struct OnDownloadOutSignal {
+pub struct OnDownloadProgressOutSignal {
     pub file_name: String,
     pub progress: f32,
+}
+
+#[derive(Serialize, RustSignal)]
+pub struct OnDownloadStartedOutSignal {
+    pub file_name: String,
 }

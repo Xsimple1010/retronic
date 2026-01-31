@@ -6,6 +6,8 @@ use tinic_super::infos::model::CoreInfo;
 pub struct CoreInfoSignalPiece {
     pub file_name: String,
     pub is_installed: bool,
+    pub info_path: String,
+    pub core_path: String,
 
     // Informações de Software
     pub display_name: String,
@@ -46,6 +48,8 @@ pub fn core_info_to_signal_piece(core: CoreInfo) -> CoreInfoSignalPiece {
     CoreInfoSignalPiece {
         file_name: core.file_name,
         is_installed: core.is_installed,
+        info_path: core.info_path.to_str().unwrap_or("").to_string(),
+        core_path: core.core_path.to_str().unwrap_or("").to_string(),
 
         // Informações de Software
         display_name: core.display_name,

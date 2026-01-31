@@ -8,7 +8,7 @@ use std::sync::Arc;
 use tokio::task::JoinSet;
 
 pub struct CloseGameActor {
-    owned_tasks: JoinSet<()>,
+    _owned_tasks: JoinSet<()>,
     app_state: Arc<AppState>,
 }
 

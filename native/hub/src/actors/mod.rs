@@ -1,4 +1,6 @@
 mod app;
+mod core;
+mod database;
 mod game;
 mod info;
 mod macros;
@@ -7,6 +9,10 @@ mod traits;
 use crate::{
     actors::{
         app::{exit_actor::AppExitActor, start_actor::AppStartActor},
+        core::install_core::InstallCoreActor,
+        database::{
+            identfier_roms_actor::IdentifierRomsActor, update_database_actor::UpdateDatabaseActor,
+        },
         game::{close_game_actor::CloseGameActor, load_game_actor::LoadGameActor},
         info::{download_infos_actor::DownloadInfoActor, get_campt_info_actor::GetCompatInfoActor},
         traits::RetronicDartActor,
@@ -25,6 +31,7 @@ pub async fn create_actors(app_state: Arc<AppState>) {
     CloseGameActor::run_actor(app_state.clone());
 
     // CORE
+    InstallCoreActor::run_actor(app_state.clone());
     // start_actor::<HasCoreInstalledActor>(app_state.clone());
     // start_actor::<DownloadCoreActor>(app_state.clone());
     // start_actor::<InstallCoreActor>(app_state.clone());
@@ -33,6 +40,7 @@ pub async fn create_actors(app_state: Arc<AppState>) {
     GetCompatInfoActor::run_actor(app_state.clone());
     DownloadInfoActor::run_actor(app_state.clone());
 
-    // // DATABASE
-    // start_actor::<UpdateDatabaseActor>(app_state.clone());
+    // DATABASE
+    IdentifierRomsActor::run_actor(app_state.clone());
+    UpdateDatabaseActor::run_actor(app_state);
 }

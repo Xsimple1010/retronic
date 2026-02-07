@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:retronic/pages/home.dart';
+import 'package:retronic/pages/home_page.dart';
 import 'package:retronic/src/bindings/bindings.dart';
 import 'package:retronic/tools/get_binary_dir.dart';
 import 'package:retronic/tools/tinic_ipc_manage.dart';
@@ -24,12 +24,14 @@ class _DownloadTinicIpcState extends State<DownloadTinicIpc> {
         return;
       }
 
-      final path = await getTinicBinary();
-      StartTinicIpc(path: path).sendSignalToRust();
+      AppStartSignal(
+        tinicIpcFile: await getTinicBinary(),
+        baseRetroPath: (await getRetronicDir()).path,
+      ).sendSignalToRust();
 
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (_) => const HomePage()),
+        MaterialPageRoute(builder: (_) => HomePage()),
       );
     }
   }

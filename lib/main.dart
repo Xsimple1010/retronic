@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:retronic/pages/download_tinic_ipc.dart';
-import 'package:retronic/pages/home.dart';
+import 'package:retronic/pages/home_page.dart';
 import 'package:retronic/tools/game_pad_input_handle.dart';
 import 'package:retronic/tools/get_binary_dir.dart';
 import 'package:rinf/rinf.dart';
@@ -17,9 +20,14 @@ Future<void> main() async {
       tinicIpcFile: await getTinicBinary(),
       baseRetroPath: (await getRetronicDir()).path,
     ).sendSignalToRust();
+
+    NeedDownloadSrcSignal().sendSignalToRust();
+    GetRecentGamesSignal(page: 1).sendSignalToRust();
   }
 
-  runApp(MyApp(hasTinic: hasTinic));
+  GetRomsFromDirSignal(dir: "/home/aderval/Downloads/roms").sendSignalToRust();
+
+  runApp(ProviderScope(child: MyApp(hasTinic: hasTinic)));
 }
 
 class MyApp extends StatefulWidget {
@@ -33,16 +41,31 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final gamePadInputObserver = GamePadInputObserver();
+  late StreamSubscription<RustSignalPack<OnNeedDownloadSrcSignalOut>>
+  downloadSrcSubscription;
 
   @override
   void initState() {
     gamePadInputObserver.start();
+
+    downloadSrcSubscription = OnNeedDownloadSrcSignalOut.rustSignalStream
+        .listen((event) {
+          if (!event.message.hasInfo) {
+            UpdateInfoSignal(force: true).sendSignalToRust();
+          }
+
+          if (!event.message.hasItemInDb) {
+            UpdateDatabaseSignal(force: false).sendSignalToRust();
+          }
+        });
+
     super.initState();
   }
 
   @override
   void dispose() {
     gamePadInputObserver.dispose();
+    downloadSrcSubscription.cancel();
     super.dispose();
   }
 
@@ -59,82 +82,3 @@ class _MyAppState extends State<MyApp> {
     );
   }
 }
-
-//
-// class MyHomePage extends StatefulWidget {
-//   const MyHomePage({super.key});
-//
-//   @override
-//   State<MyHomePage> createState() => _MyHomePageState();
-// }
-//
-// class _MyHomePageState extends State<MyHomePage> {
-//   bool closeBtVisibility(GameStateChange state) {
-//     switch (state) {
-//       case GameStateChange.running:
-//         return true;
-//       case GameStateChange.closed:
-//         return false;
-//       case GameStateChange.paused:
-//         return true;
-//     }
-//   }
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       body: Center(
-//         child: Column(
-//           mainAxisAlignment: .center,
-//           children: [
-//             const Text('You have pushed the button this many times:'),
-//             RetroElevatedButton(
-//               onPressed: () {
-//                 LoadGame(
-//                   romPath: "/home/aderval/Downloads/RetroArch_cores/ff.smc",
-//                   corePath:
-//                       "/home/aderval/Downloads/RetroArch_cores/RetroArch-Linux-x86_64/RetroArch-Linux-x86_64.AppImage.home/.config/retroarch/cores/snes9x_libretro.so",
-//                   baseRetroPath:
-//                       "/home/aderval/Downloads/RetroArch_cores/retronic",
-//                 ).sendSignalToRust();
-//               },
-//               child: Text("Jogar"),
-//             ),
-//
-//             StreamBuilder(
-//               stream: GameStateChangeSignal.rustSignalStream,
-//               builder: (context, snapshot) => Visibility(
-//                 visible: snapshot.data?.message.state != null
-//                     ? closeBtVisibility(snapshot.data!.message.state)
-//                     : false,
-//                 child: RetroElevatedButton(
-//                   onPressed: () {
-//                     CloseGame().sendSignalToRust();
-//                   },
-//                   child: Text("fechar"),
-//                 ),
-//               ),
-//             ),
-//
-//             StreamBuilder(
-//               stream: SaveStateInfoSignal.rustSignalStream,
-//               builder: (context, snapshot) => Visibility(
-//                 visible: snapshot.data?.message.saveImgPreview != null,
-//                 replacement: Text("sem imagem"),
-//                 child: Image.file(
-//                   File(snapshot.data?.message.saveImgPreview ?? ""),
-//                 ),
-//               ),
-//             ),
-//
-//             StreamBuilder(
-//               stream: DeviceConnectedSignal.rustSignalStream,
-//               builder: (context, snapshot) =>
-//                   Text("Controle name: ${snapshot.data?.message.name}"),
-//             ),
-//           ],
-//         ),
-//       ),
-//     );
-//   }
-// }

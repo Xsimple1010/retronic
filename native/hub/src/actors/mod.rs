@@ -4,6 +4,7 @@ mod database;
 mod game;
 mod info;
 mod macros;
+mod need_download_src_actor;
 mod traits;
 
 use crate::{
@@ -11,10 +12,12 @@ use crate::{
         app::{exit_actor::AppExitActor, start_actor::AppStartActor},
         core::install_core::InstallCoreActor,
         database::{
-            identfier_roms_actor::IdentifierRomsActor, update_database_actor::UpdateDatabaseActor,
+            get_recent_rom_actor::GetRecentRomActor, identfier_roms_actor::IdentifierRomsActor,
+            update_database_actor::UpdateDatabaseActor,
         },
         game::{close_game_actor::CloseGameActor, load_game_actor::LoadGameActor},
         info::{download_infos_actor::DownloadInfoActor, get_campt_info_actor::GetCompatInfoActor},
+        need_download_src_actor::NeedDownloadSrcActor,
         traits::RetronicDartActor,
     },
     app_state::AppState,
@@ -42,5 +45,8 @@ pub async fn create_actors(app_state: Arc<AppState>) {
 
     // DATABASE
     IdentifierRomsActor::run_actor(app_state.clone());
-    UpdateDatabaseActor::run_actor(app_state);
+    UpdateDatabaseActor::run_actor(app_state.clone());
+    GetRecentRomActor::run_actor(app_state.clone());
+
+    NeedDownloadSrcActor::run_actor(app_state.clone());
 }

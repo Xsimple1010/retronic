@@ -5,11 +5,16 @@ use serde::Deserialize;
 pub struct GetAllGameInfosFromRDBSignal;
 
 #[derive(Deserialize, DartSignal)]
-pub struct GetRomsFromDir {
+pub struct GetRomsFromDirSignal {
     pub dir: String,
 }
 
 #[derive(Deserialize, DartSignal)]
 pub struct UpdateDatabaseSignal {
     pub force: bool,
+}
+
+#[derive(Deserialize, DartSignal)]
+pub struct GetRecentGamesSignal {
+    pub page: u32,
 }

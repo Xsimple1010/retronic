@@ -3,5 +3,7 @@ pub mod core;
 pub mod database;
 pub mod device;
 pub mod download;
+pub mod extraction_signal;
 pub mod game;
+pub mod need_download_src_signal;
 pub mod window;

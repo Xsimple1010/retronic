@@ -1113,14 +1113,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "generics"
-version = "0.1.0"
-dependencies = [
- "libretro_sys",
- "sqlite",
-]
-
-[[package]]
 name = "gethostname"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1380,9 +1372,9 @@ dependencies = [
  "rinf",
  "serde",
  "serde_json",
- "tinic_database",
- "tinic_ipc_protocol",
- "tinic_super",
+ "tinic-database",
+ "tinic-ipc-protocol",
+ "tinic-super",
  "tokio",
 ]
 
@@ -1765,7 +1757,7 @@ dependencies = [
 ]
 
 [[package]]
-name = "libretro_sys"
+name = "libretro-sys"
 version = "0.1.0"
 dependencies = [
  "bindgen",
@@ -2977,52 +2969,52 @@ dependencies = [
 ]
 
 [[package]]
-name = "retro_audio"
+name = "retro-audio"
 version = "0.1.0"
 dependencies = [
  "cpal",
- "generics",
- "libretro_sys",
- "retro_core",
+ "libretro-sys",
+ "retro-core",
  "ringbuf",
  "rubato",
+ "tinic-generics",
 ]
 
 [[package]]
-name = "retro_controllers"
+name = "retro-controllers"
 version = "0.1.0"
 dependencies = [
- "generics",
  "gilrs",
- "libretro_sys",
- "retro_core",
+ "libretro-sys",
+ "retro-core",
+ "tinic-generics",
  "uuid",
  "winit",
 ]
 
 [[package]]
-name = "retro_core"
+name = "retro-core"
 version = "0.1.0"
 dependencies = [
- "generics",
- "libretro_sys",
+ "libretro-sys",
  "raw-cpuid",
+ "tinic-generics",
  "uuid",
 ]
 
 [[package]]
-name = "retro_video"
+name = "retro-video"
 version = "0.1.1"
 dependencies = [
  "cfg_aliases",
- "generics",
  "gl_generator",
  "glutin",
  "glutin-winit",
  "image",
- "libretro_sys",
+ "libretro-sys",
  "raw-window-handle",
- "retro_core",
+ "retro-core",
+ "tinic-generics",
  "winit",
 ]
 
@@ -3669,26 +3661,34 @@ dependencies = [
 name = "tinic"
 version = "0.1.7"
 dependencies = [
- "generics",
- "libretro_sys",
- "retro_audio",
- "retro_controllers",
- "retro_core",
- "retro_video",
+ "libretro-sys",
+ "retro-audio",
+ "retro-controllers",
+ "retro-core",
+ "retro-video",
  "serde",
+ "tinic-generics",
  "winit",
 ]
 
 [[package]]
-name = "tinic_database"
+name = "tinic-database"
 version = "0.1.0"
 dependencies = [
- "generics",
+ "sqlite",
+ "tinic-generics",
+]
+
+[[package]]
+name = "tinic-generics"
+version = "0.1.0"
+dependencies = [
+ "libretro-sys",
  "sqlite",
 ]
 
 [[package]]
-name = "tinic_ipc_protocol"
+name = "tinic-ipc-protocol"
 version = "0.1.4"
 dependencies = [
  "serde",
@@ -3696,18 +3696,18 @@ dependencies = [
 ]
 
 [[package]]
-name = "tinic_super"
+name = "tinic-super"
 version = "0.1.4"
 dependencies = [
  "crc32fast",
  "futures-util",
- "generics",
  "rayon",
  "reqwest",
  "rmp-serde",
  "serde",
  "serde_bytes",
  "sevenz-rust",
+ "tinic-generics",
  "tokio",
  "zip",
 ]

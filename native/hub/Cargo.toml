@@ -23,12 +23,12 @@ tokio = { version = "1.45.0", features = ["full"] }
 async-trait = "0.1.87"
 messages = "0.3.1"
 serde_json = "1.0.148"
-# tinic_ipc_protocol = { git = "https://github.com/Xsimple1010/Tinic.git", version = "0.1.4" }
-# tinic_super = { git = "https://github.com/Xsimple1010/Tinic", version = "0.1.4" }
-# tinic_database = { git = "https://github.com/Xsimple1010/Tinic" }
-tinic_super = { path = "../../../../RustroverProjects/Tinic/crates/tinic_super" }
-tinic_database = { path = "../../../../RustroverProjects/Tinic/crates/tinic_database" }
-tinic_ipc_protocol = { path = "../../../../RustroverProjects/Tinic/crates/tinic_ipc_protocol" }
+# tinic-ipc-protocol = { git = "https://github.com/Xsimple1010/Tinic.git", version = "0.1.4" }
+# tinic-super = { git = "https://github.com/Xsimple1010/Tinic", version = "0.1.4" }
+# tinic-database = { git = "https://github.com/Xsimple1010/Tinic" }
+tinic-super = { path = "../../../../RustroverProjects/Tinic/crates/tinic-super" }
+tinic-database = { path = "../../../../RustroverProjects/Tinic/crates/tinic-database" }
+tinic-ipc-protocol = { path = "../../../../RustroverProjects/Tinic/crates/tinic-ipc-protocol" }
 
 
 # Uncomment below to target the web.
